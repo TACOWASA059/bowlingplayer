@@ -1,0 +1,38 @@
+{
+    "schemaVersion": 1,
+    "id": "bowlingplayer",
+    "version": "${version}",
+    "name": "${mod_name}",
+    "description": "${description}",
+    "authors": [
+        "${mod_author}"
+    ],
+    "contact": {
+        "sources": "https://github.com/tacowasa059/bowlingplayer"
+    },
+    "license": "${license}",
+    "icon": "assets/bowlingplayer/icon.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "com.github.tacowasa059.bowlingplayer.fabric.BowlingPlayerFabric"
+        ],
+        "client": [
+            "com.github.tacowasa059.bowlingplayer.fabric.BowlingPlayerFabricClient"
+        ]
+    },
+    "mixins": [
+        "${mod_id}.mixins.json",
+        "${mod_id}.fabric.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=0.14",
+        "fabric": "*",
+        "minecraft": "${minecraft_version}",
+        "java": ">=17"
+    },
+    "suggests": {
+        "fabric-api-base": "*"
+    }
+}
+  

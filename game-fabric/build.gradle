@@ -1,0 +1,81 @@
+ext {
+    mod_id = "bowlingplayergame"
+    mod_name = "Bowling Player Game"
+    mod_author = "tacowasa059"
+}
+
+description = "Fabric game management add-on for Bowling Player."
+
+apply plugin: 'multiloader-common'
+apply plugin: 'fabric-loom'
+
+configurations {
+    commonJava {
+        canBeResolved = true
+    }
+    commonResources {
+        canBeResolved = true
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
+    }
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
+    compileOnly(project(':common')) {
+        capabilities {
+            requireCapability "$group:bowlingplayer"
+        }
+    }
+    compileOnly(project(':game-common')) {
+        capabilities {
+            requireCapability "$group:$mod_id"
+        }
+    }
+    commonJava project(path: ':game-common', configuration: 'commonJava')
+    commonResources project(path: ':game-common', configuration: 'commonResources')
+}
+
+tasks.named('compileJava', JavaCompile) {
+    dependsOn(configurations.commonJava)
+    source(configurations.commonJava)
+}
+
+processResources {
+    dependsOn(configurations.commonResources)
+    from(configurations.commonResources)
+}
+
+tasks.named('javadoc', Javadoc).configure {
+    dependsOn(configurations.commonJava)
+    source(configurations.commonJava)
+}
+
+tasks.named('sourcesJar', Jar) {
+    dependsOn(configurations.commonJava)
+    from(configurations.commonJava)
+    dependsOn(configurations.commonResources)
+    from(configurations.commonResources)
+}
+
+loom {
+    runs {
+        client {
+            client()
+            setConfigName("Bowling Player Game Fabric Client")
+            ideConfigGenerated(true)
+            runDir("run")
+        }
+        server {
+            server()
+            setConfigName("Bowling Player Game Fabric Server")
+            ideConfigGenerated(true)
+            runDir("run")
+        }
+    }
+}
