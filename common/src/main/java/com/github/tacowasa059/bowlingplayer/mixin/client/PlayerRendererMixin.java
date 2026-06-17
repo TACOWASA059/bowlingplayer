@@ -34,6 +34,10 @@ public abstract class PlayerRendererMixin {
         if (mode == BowlingPlayerMode.NORMAL) {
             return;
         }
+        // Spectators are drawn by vanilla (faint/translucent) rather than as a solid pin/ball.
+        if (player.isSpectator()) {
+            return;
+        }
 
         poseStack.pushPose();
         Vec3 renderOffset = this.getRenderOffset(player, partialTick);

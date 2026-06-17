@@ -14,6 +14,9 @@
       "com.github.tacowasa059.bowlingplayergame.fabric.BowlingPlayerGameFabric"
     ]
   },
+  "mixins": [
+    "${mod_id}.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.14",
     "fabric": "*",
