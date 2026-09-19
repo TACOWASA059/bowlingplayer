@@ -1,0 +1,17 @@
+{
+  "bowlingplayer.mode.normal": "normal",
+  "bowlingplayer.mode.pin": "pin",
+  "bowlingplayer.mode.ball": "ball",
+  "bowlingplayer.command.get_mode": "%s's mode: %s",
+  "bowlingplayer.command.get_ball_size": "%s's ball size: %s",
+  "bowlingplayer.command.get_pin_size": "%s's pin size: %s",
+  "bowlingplayer.command.get_restitution": "%s's restitution: %s",
+  "bowlingplayer.command.get_speed": "%s's speed multiplier: %s",
+  "bowlingplayer.command.get_damage": "%s's contact damage: %s",
+  "bowlingplayer.command.set_mode": "Set %s player(s) to %s",
+  "bowlingplayer.command.set_ball_size": "Set ball size to %s for %s player(s)",
+  "bowlingplayer.command.set_pin_size": "Set pin size to %s for %s player(s)",
+  "bowlingplayer.command.set_restitution": "Set restitution to %s for %s player(s)",
+  "bowlingplayer.command.set_speed": "Set speed multiplier to %s for %s player(s)",
+  "bowlingplayer.command.set_damage": "Set contact damage to %s for %s player(s)"
+}

@@ -246,7 +246,7 @@ public final class GameManager {
             cobwebs.add(new CobwebEntry(dim, new BlockPos(cobweb.x, cobweb.y, cobweb.z), now + cobweb.remainingTicks));
         }
 
-        bossBar = new ServerBossEvent(Component.literal("生存者"), BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.PROGRESS);
+        bossBar = new ServerBossEvent(Component.translatable("bpg.bossbar.survivors"), BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.PROGRESS);
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             bossBar.addPlayer(player);
             GameTeam team = teamOf(player);
@@ -285,7 +285,7 @@ public final class GameManager {
         Objective objective = scoreboard.getObjective(name);
         if (objective == null) {
             objective = scoreboard.addObjective(name, ObjectiveCriteria.DUMMY,
-                    Component.literal(display), ObjectiveCriteria.RenderType.INTEGER);
+                    Component.translatable(display), ObjectiveCriteria.RenderType.INTEGER);
         }
         return objective;
     }
@@ -299,8 +299,8 @@ public final class GameManager {
                 scoreboard.removeObjective(objective);
             }
         }
-        objective(OBJ_KILLS, "捕獲数(青)");
-        objective(OBJ_RESCUES, "救出数(赤)");
+        objective(OBJ_KILLS, "bpg.score.kills_blue");
+        objective(OBJ_RESCUES, "bpg.score.rescues_red");
         clearSidebar();
     }
 
@@ -313,7 +313,7 @@ public final class GameManager {
         int sinceEnd = server.getTickCount() - endTick;
         if (sinceEnd > 0 && sinceEnd % SIDEBAR_SWAP_TICKS == 0) {
             boolean showKills = (sinceEnd / SIDEBAR_SWAP_TICKS) % 2 == 0;
-            Objective objective = showKills ? objective(OBJ_KILLS, "捕獲数(青)") : objective(OBJ_RESCUES, "救出数(赤)");
+            Objective objective = showKills ? objective(OBJ_KILLS, "bpg.score.kills_blue") : objective(OBJ_RESCUES, "bpg.score.rescues_red");
             server.getScoreboard().setDisplayObjective(Scoreboard.DISPLAY_SLOT_SIDEBAR, objective);
         }
     }
@@ -435,10 +435,10 @@ public final class GameManager {
     @Nullable
     public Component start() {
         if (phase == GamePhase.RUNNING) {
-            return Component.literal("ゲームは既に進行中です");
+            return Component.translatable("bpg.error.already_running");
         }
         if (!config.isReady()) {
-            return Component.literal("設定が未完了です (赤展開/青展開/牢獄の座標を設定してください)");
+            return Component.translatable("bpg.error.config_incomplete");
         }
         ensureTeams();
         applyGameRules();
@@ -456,7 +456,7 @@ public final class GameManager {
         clearGlows();
         clearCobwebs();
 
-        bossBar = new ServerBossEvent(Component.literal("生存者"), BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.PROGRESS);
+        bossBar = new ServerBossEvent(Component.translatable("bpg.bossbar.survivors"), BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.PROGRESS);
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             bossBar.addPlayer(player);
         }
@@ -470,15 +470,15 @@ public final class GameManager {
             applyTeamState(player, GameTeam.RED);
             teleport(player, config.redDeploy, config.redDeployRadius);
             equip(player, GameTeam.RED);
-            showTitle(player, Component.literal("Game Start").withStyle(ChatFormatting.RED),
-                    Component.literal("逃げ切れ！"));
+            showTitle(player, Component.translatable("bpg.title.start").withStyle(ChatFormatting.RED),
+                    Component.translatable("bpg.title.run"));
         }
         // Blue waits as spectator until the deploy delay elapses.
         for (ServerPlayer player : playersOf(GameTeam.BLUE)) {
             player.setGameMode(GameType.SPECTATOR);
             teleport(player, config.blueDeploy, 0);
-            showTitle(player, Component.literal("待機中").withStyle(ChatFormatting.BLUE),
-                    Component.literal(config.blueDeployDelaySeconds + "秒後に出動"));
+            showTitle(player, Component.translatable("bpg.title.waiting").withStyle(ChatFormatting.BLUE),
+                    Component.translatable("bpg.title.deploy_in", config.blueDeployDelaySeconds));
         }
         // Game-start sound for everyone (anvil place).
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
@@ -496,16 +496,16 @@ public final class GameManager {
             applyTeamState(player, GameTeam.BLUE);
             teleport(player, config.blueDeploy, 0);
             equip(player, GameTeam.BLUE);
-            showTitle(player, Component.literal("Game Start").withStyle(ChatFormatting.BLUE),
-                    Component.literal("追え！"));
+            showTitle(player, Component.translatable("bpg.title.start").withStyle(ChatFormatting.BLUE),
+                    Component.translatable("bpg.title.chase"));
         }
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             if (teamOf(player) != GameTeam.BLUE) {
-                showTitle(player, Component.literal("青チーム出動！").withStyle(ChatFormatting.AQUA), null);
+                showTitle(player, Component.translatable("bpg.title.blue_deployed").withStyle(ChatFormatting.AQUA), null);
             }
             player.playNotifySound(SoundEvents.PLAYER_LEVELUP, SoundSource.MASTER, 1.0F, 1.0F);
         }
-        broadcast(Component.literal("青チーム(Ball)が出動した！").withStyle(ChatFormatting.AQUA));
+        broadcast(Component.translatable("bpg.message.blue_deployed").withStyle(ChatFormatting.AQUA));
         saveState();
     }
 
@@ -513,10 +513,10 @@ public final class GameManager {
     @Nullable
     public Component stop() {
         if (phase == GamePhase.IDLE) {
-            return Component.literal("ゲームは実行されていません");
+            return Component.translatable("bpg.error.not_running");
         }
         resetToIdle();
-        broadcast(Component.literal("ゲームを終了しました").withStyle(ChatFormatting.GRAY));
+        broadcast(Component.translatable("bpg.message.stopped").withStyle(ChatFormatting.GRAY));
         return null;
     }
 
@@ -546,17 +546,17 @@ public final class GameManager {
         phase = GamePhase.ENDED;
         endTick = server.getTickCount();
         Component result = winner == GameTeam.RED
-                ? Component.literal("赤チーム(Pin) の勝利！").withStyle(ChatFormatting.RED)
-                : Component.literal("青チーム(Ball) の勝利！").withStyle(ChatFormatting.BLUE);
+                ? Component.translatable("bpg.title.red_wins").withStyle(ChatFormatting.RED)
+                : Component.translatable("bpg.title.blue_wins").withStyle(ChatFormatting.BLUE);
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-            showTitle(player, Component.literal("Game End").withStyle(ChatFormatting.GOLD), result);
+            showTitle(player, Component.translatable("bpg.title.end").withStyle(ChatFormatting.GOLD), result);
             player.playNotifySound(SoundEvents.ANVIL_USE, SoundSource.MASTER, 1.0F, 1.0F);
             // Everyone watches the result as a spectator.
             player.setGameMode(GameType.SPECTATOR);
             ((BowlingPlayerStateAccess) player).bowlingPlayer$setMode(BowlingPlayerMode.NORMAL);
             player.refreshDimensions();
         }
-        broadcast(Component.literal("=== 結果 ===").withStyle(ChatFormatting.GOLD));
+        broadcast(Component.translatable("bpg.header.results").withStyle(ChatFormatting.GOLD));
         broadcast(result);
         broadcastScores();
         if (bossBar != null) {
@@ -568,7 +568,7 @@ public final class GameManager {
         clearCobwebs();
         deleteState();
         // Show the scoreboard sidebar now (alternates between scores afterwards via tick).
-        server.getScoreboard().setDisplayObjective(Scoreboard.DISPLAY_SLOT_SIDEBAR, objective(OBJ_KILLS, "捕獲数(青)"));
+        server.getScoreboard().setDisplayObjective(Scoreboard.DISPLAY_SLOT_SIDEBAR, objective(OBJ_KILLS, "bpg.score.kills_blue"));
         BowlingPlayerGameConstants.LOG.info("Kaidoro game ended, winner={}", winner);
     }
 
@@ -712,7 +712,7 @@ public final class GameManager {
                 applyTeamState(player, GameTeam.BLUE);
                 teleport(player, config.blueDeploy, 0);
                 giveCobwebs(player, GameTeam.BLUE);
-                notify(player, Component.literal("復帰した").withStyle(ChatFormatting.BLUE), 3);
+                notify(player, Component.translatable("bpg.message.respawned").withStyle(ChatFormatting.BLUE), 3);
             }
         }
     }
@@ -729,7 +729,7 @@ public final class GameManager {
                 alive++;
             }
         }
-        bossBar.setName(Component.literal("生存者 (Pin): " + alive + " / " + total));
+        bossBar.setName(Component.translatable("bpg.bossbar.count", alive, total));
         bossBar.setProgress(total == 0 ? 0f : (float) alive / total);
     }
 
@@ -746,7 +746,7 @@ public final class GameManager {
         int now = server.getTickCount();
         int elapsed = now - startTick;
         int remaining = Math.max(0, config.timeLimitSeconds - elapsed / 20);
-        MutableComponent time = Component.literal(String.format("残り %02d:%02d", remaining / 60, remaining % 60))
+        MutableComponent time = Component.translatable("bpg.actionbar.remaining", String.format("%02d:%02d", remaining / 60, remaining % 60))
                 .withStyle(remaining <= 60 ? ChatFormatting.RED : ChatFormatting.WHITE);
         Component separator = Component.literal("  ｜  ").withStyle(ChatFormatting.DARK_GRAY);
 
@@ -756,20 +756,20 @@ public final class GameManager {
             // Per-player deploy / respawn countdown.
             if (teamOf(player) == GameTeam.BLUE) {
                 int countdownTicks = -1;
-                String label = null;
+                String countdownKey = null;
                 if (!blueDeployed) {
                     countdownTicks = config.blueDeployDelayTicks() - elapsed;
-                    label = "出動まで ";
+                    countdownKey = "bpg.actionbar.deploy_in";
                 } else {
                     Integer respawnAt = blueRespawnAt.get(player.getUUID());
                     if (respawnAt != null) {
                         countdownTicks = respawnAt - now;
-                        label = "復帰まで ";
+                        countdownKey = "bpg.actionbar.respawn_in";
                     }
                 }
-                if (label != null && countdownTicks > 0) {
+                if (countdownKey != null && countdownTicks > 0) {
                     int secs = (int) Math.ceil(countdownTicks / 20.0);
-                    line.append(separator).append(Component.literal(label + secs + "秒").withStyle(ChatFormatting.AQUA));
+                    line.append(separator).append(Component.translatable(countdownKey, secs).withStyle(ChatFormatting.AQUA));
                 }
             }
 
@@ -799,7 +799,7 @@ public final class GameManager {
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             player.connection.send(new ClientboundSetTitlesAnimationPacket(0, 22, 4));
             player.connection.send(new ClientboundSetSubtitleTextPacket(
-                    Component.literal("青チーム出動まで").withStyle(ChatFormatting.AQUA)));
+                    Component.translatable("bpg.title.deploy_countdown").withStyle(ChatFormatting.AQUA)));
             player.connection.send(new ClientboundSetTitleTextPacket(
                     Component.literal(String.valueOf(remainingSeconds)).withStyle(ChatFormatting.YELLOW)));
             player.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.MASTER, 0.7F, 1.0F);
@@ -855,9 +855,9 @@ public final class GameManager {
             jailed.add(victim.getUUID());
             Entity killer = source.getEntity();
             if (killer instanceof ServerPlayer killerPlayer && teamOf(killerPlayer) == GameTeam.BLUE) {
-                addScore(OBJ_KILLS, "捕獲数", killerPlayer, 1);
+                addScore(OBJ_KILLS, "bpg.score.kills_blue", killerPlayer, 1);
                 notify(killerPlayer,
-                        Component.literal("捕獲！ (合計 " + scoreOf(OBJ_KILLS, killerPlayer) + ")").withStyle(ChatFormatting.GREEN), 3);
+                        Component.translatable("bpg.message.capture", scoreOf(OBJ_KILLS, killerPlayer)).withStyle(ChatFormatting.GREEN), 3);
             }
         } else if (team == GameTeam.BLUE) {
             blueRespawnAt.put(victim.getUUID(), server.getTickCount() + config.blueSpectatorSeconds * 20);
@@ -889,7 +889,7 @@ public final class GameManager {
             applyTeamState(player, GameTeam.RED);
             teleport(player, nextJail(), 0);
             giveCobwebs(player, GameTeam.RED);
-            notify(player, Component.literal("牢獄に収監された。仲間の救出を待て！").withStyle(ChatFormatting.RED), 4);
+            notify(player, Component.translatable("bpg.message.jailed").withStyle(ChatFormatting.RED), 4);
         } else if (team == GameTeam.BLUE) {
             player.setGameMode(GameType.SPECTATOR);
             teleport(player, config.blueDeploy, 0);
@@ -927,10 +927,10 @@ public final class GameManager {
         jailed.remove(captured.getUUID());
         captured.teleportTo((ServerLevel) rescuer.level(), rescuer.getX(), rescuer.getY(), rescuer.getZ(),
                 rescuer.getYRot(), rescuer.getXRot());
-        addScore(OBJ_RESCUES, "救出数", rescuer, 1);
+        addScore(OBJ_RESCUES, "bpg.score.rescues_red", rescuer, 1);
         notify(rescuer,
-                Component.literal("救出成功！ (合計 " + scoreOf(OBJ_RESCUES, rescuer) + ")").withStyle(ChatFormatting.GREEN), 3);
-        notify(captured, Component.literal("救出された！").withStyle(ChatFormatting.GREEN), 3);
+                Component.translatable("bpg.message.rescue", scoreOf(OBJ_RESCUES, rescuer)).withStyle(ChatFormatting.GREEN), 3);
+        notify(captured, Component.translatable("bpg.message.rescued").withStyle(ChatFormatting.GREEN), 3);
         updateBossBar();
         saveState();
     }
@@ -966,14 +966,14 @@ public final class GameManager {
         // Ray-trace from the eyes; place in the air block just before the looked-at block.
         net.minecraft.world.phys.HitResult hit = player.pick(5.0, 1.0F, false);
         if (hit.getType() != net.minecraft.world.phys.HitResult.Type.BLOCK) {
-            notify(player, Component.literal("設置できる場所が見つからない").withStyle(ChatFormatting.GRAY), 2);
+            notify(player, Component.translatable("bpg.error.no_placement").withStyle(ChatFormatting.GRAY), 2);
             return;
         }
         net.minecraft.world.phys.BlockHitResult blockHit = (net.minecraft.world.phys.BlockHitResult) hit;
         BlockPos pos = blockHit.getBlockPos().relative(blockHit.getDirection());
         net.minecraft.world.level.block.state.BlockState existing = level.getBlockState(pos);
         if (!existing.isAir() && !existing.getCollisionShape(level, pos).isEmpty()) {
-            notify(player, Component.literal("ここには設置できない").withStyle(ChatFormatting.GRAY), 2);
+            notify(player, Component.translatable("bpg.error.cannot_place").withStyle(ChatFormatting.GRAY), 2);
             return;
         }
         level.setBlockAndUpdate(pos, Blocks.COBWEB.defaultBlockState());
@@ -1008,7 +1008,7 @@ public final class GameManager {
             }
         }
         detectorCooldown.put(player.getUUID(), now + config.itemCooldownTicks());
-        notify(player, Component.literal("探知: 周囲" + range + "ブロックに " + found + "人").withStyle(ChatFormatting.GOLD), 3);
+        notify(player, Component.translatable("bpg.message.detected", range, found).withStyle(ChatFormatting.GOLD), 3);
     }
 
     private void addGlow(UUID viewer, UUID target, int expireTick) {
@@ -1067,11 +1067,11 @@ public final class GameManager {
         int amplifier = Math.max(0, config.speedLevel - 1);
         player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, config.speedDurationSeconds * 20, amplifier, false, true));
         speedCooldown.put(player.getUUID(), now + config.itemCooldownTicks());
-        notify(player, Component.literal("加速！ " + config.speedDurationSeconds + "秒").withStyle(ChatFormatting.YELLOW), 3);
+        notify(player, Component.translatable("bpg.message.speed", config.speedDurationSeconds).withStyle(ChatFormatting.YELLOW), 3);
     }
 
     private Component cooldownMessage(int ticksLeft) {
-        return Component.literal("クールダウン中 (残り " + (ticksLeft / 20) + "秒)").withStyle(ChatFormatting.GRAY);
+        return Component.translatable("bpg.message.cooldown", ticksLeft / 20).withStyle(ChatFormatting.GRAY);
     }
 
     /** True while a participant must not be able to drop items (used by loader drop hooks). */
@@ -1159,9 +1159,9 @@ public final class GameManager {
     }
 
     private void broadcastScores() {
-        broadcast(Component.literal("-- 青チーム(Ball) 捕獲数 TOP" + SCORE_TOP_N + " --").withStyle(ChatFormatting.BLUE));
+        broadcast(Component.translatable("bpg.header.kills_top", SCORE_TOP_N).withStyle(ChatFormatting.BLUE));
         broadcastTop(playersOf(GameTeam.BLUE), OBJ_KILLS);
-        broadcast(Component.literal("-- 赤チーム(Pin) 救出数 TOP" + SCORE_TOP_N + " --").withStyle(ChatFormatting.RED));
+        broadcast(Component.translatable("bpg.header.rescues_top", SCORE_TOP_N).withStyle(ChatFormatting.RED));
         broadcastTop(playersOf(GameTeam.RED), OBJ_RESCUES);
     }
 

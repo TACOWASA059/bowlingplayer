@@ -39,7 +39,7 @@ public final class BowlingPlayerCommands {
                                         .executes(context -> {
                                             ServerPlayer player = EntityArgument.getPlayer(context, "target");
                                             BowlingPlayerMode mode = ((BowlingPlayerStateAccess) player).bowlingPlayer$getMode();
-                                            context.getSource().sendSuccess(() -> Component.literal(player.getName().getString() + ": " + mode.getSerializedName()), false);
+                                            context.getSource().sendSuccess(() -> Component.translatable("bowlingplayer.command.get_mode", player.getName(), Component.translatable("bowlingplayer.mode." + mode.getSerializedName())), false);
                                             return 1;
                                         }))))
                 .then(Commands.literal("size")
@@ -56,7 +56,7 @@ public final class BowlingPlayerCommands {
                                                 .executes(context -> {
                                                     ServerPlayer player = EntityArgument.getPlayer(context, "target");
                                                     float size = ((BowlingPlayerStateAccess) player).bowlingPlayer$getBallSize();
-                                                    context.getSource().sendSuccess(() -> Component.literal(player.getName().getString() + " ball size: " + size), false);
+                                                    context.getSource().sendSuccess(() -> Component.translatable("bowlingplayer.command.get_ball_size", player.getName(), size), false);
                                                     return 1;
                                                 }))))
                         .then(Commands.literal("pin")
@@ -72,7 +72,7 @@ public final class BowlingPlayerCommands {
                                                 .executes(context -> {
                                                     ServerPlayer player = EntityArgument.getPlayer(context, "target");
                                                     float size = ((BowlingPlayerStateAccess) player).bowlingPlayer$getPinSize();
-                                                    context.getSource().sendSuccess(() -> Component.literal(player.getName().getString() + " pin size: " + size), false);
+                                                    context.getSource().sendSuccess(() -> Component.translatable("bowlingplayer.command.get_pin_size", player.getName(), size), false);
                                                     return 1;
                                                 })))))
                 .then(Commands.literal("restitution")
@@ -88,7 +88,7 @@ public final class BowlingPlayerCommands {
                                         .executes(context -> {
                                             ServerPlayer player = EntityArgument.getPlayer(context, "target");
                                             float value = ((BowlingPlayerStateAccess) player).bowlingPlayer$getRestitutionCoefficient();
-                                            context.getSource().sendSuccess(() -> Component.literal(player.getName().getString() + " restitution: " + value), false);
+                                            context.getSource().sendSuccess(() -> Component.translatable("bowlingplayer.command.get_restitution", player.getName(), value), false);
                                             return 1;
                                         }))))
                 .then(Commands.literal("speed")
@@ -104,7 +104,7 @@ public final class BowlingPlayerCommands {
                                         .executes(context -> {
                                             ServerPlayer player = EntityArgument.getPlayer(context, "target");
                                             float value = ((BowlingPlayerStateAccess) player).bowlingPlayer$getBallSpeedMultiplier();
-                                            context.getSource().sendSuccess(() -> Component.literal(player.getName().getString() + " speed multiplier: " + value), false);
+                                            context.getSource().sendSuccess(() -> Component.translatable("bowlingplayer.command.get_speed", player.getName(), value), false);
                                             return 1;
                                         }))))
                 .then(Commands.literal("damage")
@@ -120,7 +120,7 @@ public final class BowlingPlayerCommands {
                                         .executes(context -> {
                                             ServerPlayer player = EntityArgument.getPlayer(context, "target");
                                             float value = ((BowlingPlayerStateAccess) player).bowlingPlayer$getPinContactDamage();
-                                            context.getSource().sendSuccess(() -> Component.literal(player.getName().getString() + " contact damage: " + value), false);
+                                            context.getSource().sendSuccess(() -> Component.translatable("bowlingplayer.command.get_damage", player.getName(), value), false);
                                             return 1;
                                         }))));
         dispatcher.register(root);
@@ -131,7 +131,7 @@ public final class BowlingPlayerCommands {
             ((BowlingPlayerStateAccess) player).bowlingPlayer$setMode(mode);
             player.refreshDimensions();
         }
-        source.sendSuccess(() -> Component.literal("Set " + players.size() + " player(s) to " + mode.getSerializedName()), true);
+        source.sendSuccess(() -> Component.translatable("bowlingplayer.command.set_mode", players.size(), Component.translatable("bowlingplayer.mode." + mode.getSerializedName())), true);
         return players.size();
     }
 
@@ -140,7 +140,7 @@ public final class BowlingPlayerCommands {
             ((BowlingPlayerStateAccess) player).bowlingPlayer$setBallSize(size);
             player.refreshDimensions();
         }
-        source.sendSuccess(() -> Component.literal("Set ball size to " + size + " for " + players.size() + " player(s)"), true);
+        source.sendSuccess(() -> Component.translatable("bowlingplayer.command.set_ball_size", size, players.size()), true);
         return players.size();
     }
 
@@ -149,7 +149,7 @@ public final class BowlingPlayerCommands {
             ((BowlingPlayerStateAccess) player).bowlingPlayer$setPinSize(size);
             player.refreshDimensions();
         }
-        source.sendSuccess(() -> Component.literal("Set pin size to " + size + " for " + players.size() + " player(s)"), true);
+        source.sendSuccess(() -> Component.translatable("bowlingplayer.command.set_pin_size", size, players.size()), true);
         return players.size();
     }
 
@@ -157,7 +157,7 @@ public final class BowlingPlayerCommands {
         for (ServerPlayer player : players) {
             ((BowlingPlayerStateAccess) player).bowlingPlayer$setRestitutionCoefficient(value);
         }
-        source.sendSuccess(() -> Component.literal("Set restitution to " + value + " for " + players.size() + " player(s)"), true);
+        source.sendSuccess(() -> Component.translatable("bowlingplayer.command.set_restitution", value, players.size()), true);
         return players.size();
     }
 
@@ -165,7 +165,7 @@ public final class BowlingPlayerCommands {
         for (ServerPlayer player : players) {
             ((BowlingPlayerStateAccess) player).bowlingPlayer$setBallSpeedMultiplier(value);
         }
-        source.sendSuccess(() -> Component.literal("Set speed multiplier to " + value + " for " + players.size() + " player(s)"), true);
+        source.sendSuccess(() -> Component.translatable("bowlingplayer.command.set_speed", value, players.size()), true);
         return players.size();
     }
 
@@ -173,7 +173,7 @@ public final class BowlingPlayerCommands {
         for (ServerPlayer player : players) {
             ((BowlingPlayerStateAccess) player).bowlingPlayer$setPinContactDamage(value);
         }
-        source.sendSuccess(() -> Component.literal("Set contact damage to " + value + " for " + players.size() + " player(s)"), true);
+        source.sendSuccess(() -> Component.translatable("bowlingplayer.command.set_damage", value, players.size()), true);
         return players.size();
     }
 }

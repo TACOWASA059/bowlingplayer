@@ -28,21 +28,21 @@ public final class GameItems {
     public static ItemStack cobweb(int count) {
         ItemStack stack = new ItemStack(Items.COBWEB, count);
         mark(stack, ID_COBWEB);
-        stack.setHoverName(Component.literal("設置用クモの巣").withStyle(ChatFormatting.WHITE));
+        stack.setHoverName(Component.translatable("item.bowlingplayergame.cobweb").withStyle(ChatFormatting.WHITE));
         return stack;
     }
 
     public static ItemStack detector() {
         ItemStack stack = new ItemStack(Items.ECHO_SHARD);
         mark(stack, ID_DETECTOR);
-        stack.setHoverName(Component.literal("探知機").withStyle(ChatFormatting.GOLD));
+        stack.setHoverName(Component.translatable("item.bowlingplayergame.detector").withStyle(ChatFormatting.GOLD));
         return stack;
     }
 
     public static ItemStack speed() {
         ItemStack stack = new ItemStack(Items.FEATHER);
         mark(stack, ID_SPEED);
-        stack.setHoverName(Component.literal("加速の羽").withStyle(ChatFormatting.YELLOW));
+        stack.setHoverName(Component.translatable("item.bowlingplayergame.speed").withStyle(ChatFormatting.YELLOW));
         return stack;
     }
 

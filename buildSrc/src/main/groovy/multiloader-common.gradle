@@ -4,7 +4,8 @@ plugins {
 }
 
 base {
-    archivesName = "${mod_id}-${project.name}-${minecraft_version}"
+    def archiveModuleName = project.name.startsWith('game-') ? project.name.substring(5) : project.name
+    archivesName = "${mod_id}-${archiveModuleName}-${minecraft_version}"
 }
 
 java {

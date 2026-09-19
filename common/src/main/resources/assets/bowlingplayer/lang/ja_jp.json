@@ -1,0 +1,17 @@
+{
+  "bowlingplayer.mode.normal": "通常",
+  "bowlingplayer.mode.pin": "ピン",
+  "bowlingplayer.mode.ball": "ボール",
+  "bowlingplayer.command.get_mode": "%s のモード: %s",
+  "bowlingplayer.command.get_ball_size": "%s のボールサイズ: %s",
+  "bowlingplayer.command.get_pin_size": "%s のピンサイズ: %s",
+  "bowlingplayer.command.get_restitution": "%s の反発係数: %s",
+  "bowlingplayer.command.get_speed": "%s の速度倍率: %s",
+  "bowlingplayer.command.get_damage": "%s の接触ダメージ: %s",
+  "bowlingplayer.command.set_mode": "%s人のモードを %s に設定しました",
+  "bowlingplayer.command.set_ball_size": "%2$s人のボールサイズを %1$s に設定しました",
+  "bowlingplayer.command.set_pin_size": "%2$s人のピンサイズを %1$s に設定しました",
+  "bowlingplayer.command.set_restitution": "%2$s人の反発係数を %1$s に設定しました",
+  "bowlingplayer.command.set_speed": "%2$s人の速度倍率を %1$s に設定しました",
+  "bowlingplayer.command.set_damage": "%2$s人の接触ダメージを %1$s に設定しました"
+}

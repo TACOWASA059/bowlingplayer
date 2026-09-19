@@ -43,7 +43,7 @@ public final class GameCommands {
                 ctx.getSource().sendFailure(error);
                 return 0;
             }
-            ok(ctx, "ゲームを開始しました");
+            ok(ctx, "bpg.command.started");
             return 1;
         }));
         root.then(Commands.literal("stop").executes(ctx -> {
@@ -82,19 +82,19 @@ public final class GameCommands {
                             for (ServerPlayer player : targets) {
                                 manager.setTeam(player, null);
                             }
-                            ok(ctx, targets.size() + "人をチームから外しました");
+                            ok(ctx, "bpg.command.team_removed", targets.size());
                             return targets.size();
                         }))));
 
         team.then(Commands.literal("swap").executes(ctx -> {
             GameManager.get(ctx.getSource().getServer()).swapTeams();
-            ok(ctx, "赤チームと青チームを入れ替えました");
+            ok(ctx, "bpg.command.teams_swapped");
             return 1;
         }));
 
         team.then(Commands.literal("clear").executes(ctx -> {
             GameManager.get(ctx.getSource().getServer()).clearTeams();
-            ok(ctx, "全員のチーム割り当てを解除しました");
+            ok(ctx, "bpg.command.teams_cleared");
             return 1;
         }));
 
@@ -108,16 +108,15 @@ public final class GameCommands {
             for (ServerPlayer player : targets) {
                 manager.setTeam(player, target);
             }
-            feedback(ctx.getSource(), Component.literal(targets.size() + "人を ").withStyle(ChatFormatting.GREEN)
-                    .append(Component.literal(target.getDisplayName()).withStyle(target.getColor()))
-                    .append(Component.literal(" に設定しました").withStyle(ChatFormatting.GREEN)));
+            feedback(ctx.getSource(), Component.translatable("bpg.command.team_set", targets.size(), target.getDisplayName())
+                    .withStyle(ChatFormatting.GREEN));
             return targets.size();
         });
     }
 
     private static int autoAssign(CommandSourceStack source, boolean force) {
         int count = GameManager.get(source.getServer()).autoAssign(force);
-        feedback(source, Component.literal(count + "人をチームに割り当てました").withStyle(ChatFormatting.GREEN));
+        feedback(source, Component.translatable("bpg.command.team_auto", count).withStyle(ChatFormatting.GREEN));
         return count;
     }
 
@@ -156,7 +155,7 @@ public final class GameCommands {
                                     manager.config().teamRatioRed = red;
                                     manager.config().teamRatioBlue = blue;
                                     manager.saveConfig();
-                                    ok(ctx, "チーム比を 赤:青 = " + red + ":" + blue + " に設定しました");
+                                    ok(ctx, "bpg.command.ratio_set", red, blue);
                                     return 1;
                                 }))));
 
@@ -175,7 +174,7 @@ public final class GameCommands {
             GameManager manager = GameManager.get(ctx.getSource().getServer());
             manager.config().blueDeploy = GamePos.fromSource(ctx.getSource());
             manager.saveConfig();
-            ok(ctx, "青チーム展開位置を現在地に設定しました");
+            ok(ctx, "bpg.command.blue_deploy_set");
             return 1;
         }));
 
@@ -185,14 +184,14 @@ public final class GameCommands {
                     manager.config().jailPositions.add(GamePos.fromSource(ctx.getSource()));
                     manager.saveConfig();
                     int count = manager.config().jailPositions.size();
-                    ok(ctx, "牢獄位置を追加しました (合計 " + count + ")");
+                    ok(ctx, "bpg.command.jail_added", count);
                     return 1;
                 }))
                 .then(Commands.literal("clear").executes(ctx -> {
                     GameManager manager = GameManager.get(ctx.getSource().getServer());
                     manager.config().jailPositions.clear();
                     manager.saveConfig();
-                    ok(ctx, "牢獄位置を全てクリアしました");
+                    ok(ctx, "bpg.command.jails_cleared");
                     return 1;
                 })));
 
@@ -204,7 +203,7 @@ public final class GameCommands {
         manager.config().redDeploy = GamePos.fromSource(source);
         manager.config().redDeployRadius = radius;
         manager.saveConfig();
-        feedback(source, Component.literal("赤チーム展開位置を現在地に設定しました (半径 " + radius + ")").withStyle(ChatFormatting.GREEN));
+        feedback(source, Component.translatable("bpg.command.red_deploy_set", radius).withStyle(ChatFormatting.GREEN));
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> intSetting(String name, int min, int max, BiConsumer<GameConfig, Integer> setter) {
@@ -214,7 +213,7 @@ public final class GameCommands {
                     int value = IntegerArgumentType.getInteger(ctx, "value");
                     setter.accept(manager.config(), value);
                     manager.saveConfig();
-                    ok(ctx, name + " = " + value + " に設定しました");
+                    ok(ctx, "bpg.command.setting_set", name, value);
                     return 1;
                 }));
     }
@@ -226,7 +225,7 @@ public final class GameCommands {
                     float value = FloatArgumentType.getFloat(ctx, "value");
                     setter.accept(manager.config(), value);
                     manager.saveConfig();
-                    ok(ctx, name + " = " + value + " に設定しました");
+                    ok(ctx, "bpg.command.setting_set", name, value);
                     return 1;
                 }));
     }
@@ -238,16 +237,16 @@ public final class GameCommands {
     private static LiteralArgumentBuilder<CommandSourceStack> itemTeam(String literal, GameTeam team) {
         return Commands.literal(literal)
                 .then(Commands.literal("steak").then(Commands.argument("count", IntegerArgumentType.integer(0, 64))
-                        .executes(ctx -> setLoadout(ctx, team, "ステーキ",
+                        .executes(ctx -> setLoadout(ctx, team, "bpg.loadout.steak",
                                 lo -> lo.steak = IntegerArgumentType.getInteger(ctx, "count")))))
                 .then(Commands.literal("cobwebs").then(Commands.argument("count", IntegerArgumentType.integer(0, 64))
-                        .executes(ctx -> setLoadout(ctx, team, "クモの巣",
+                        .executes(ctx -> setLoadout(ctx, team, "bpg.loadout.cobwebs",
                                 lo -> lo.cobwebs = IntegerArgumentType.getInteger(ctx, "count")))))
                 .then(Commands.literal("detector").then(Commands.argument("enabled", BoolArgumentType.bool())
-                        .executes(ctx -> setLoadout(ctx, team, "探知機",
+                        .executes(ctx -> setLoadout(ctx, team, "bpg.loadout.detector",
                                 lo -> lo.detector = BoolArgumentType.getBool(ctx, "enabled")))))
                 .then(Commands.literal("speed").then(Commands.argument("enabled", BoolArgumentType.bool())
-                        .executes(ctx -> setLoadout(ctx, team, "加速の羽",
+                        .executes(ctx -> setLoadout(ctx, team, "bpg.loadout.speed",
                                 lo -> lo.speed = BoolArgumentType.getBool(ctx, "enabled")))))
                 // Extensible kit: add/remove arbitrary vanilla items.
                 .then(Commands.literal("add")
@@ -263,7 +262,7 @@ public final class GameCommands {
                     GameManager manager = GameManager.get(ctx.getSource().getServer());
                     manager.config().loadoutOf(team).extraItems.clear();
                     manager.saveConfig();
-                    ok(ctx, team.getDisplayName() + " の追加アイテムを全て消去しました");
+                    ok(ctx, "bpg.command.extras_cleared", team.getDisplayName());
                     return 1;
                 }));
     }
@@ -273,8 +272,8 @@ public final class GameCommands {
         GameManager manager = GameManager.get(ctx.getSource().getServer());
         mutator.accept(manager.config().loadoutOf(team));
         manager.saveConfig();
-        feedback(ctx.getSource(), Component.literal(team.getDisplayName()).withStyle(team.getColor())
-                .append(Component.literal(" の " + label + " を更新しました").withStyle(ChatFormatting.GREEN)));
+        feedback(ctx.getSource(), Component.translatable("bpg.command.loadout_set", team.getDisplayName(), Component.translatable(label))
+                .withStyle(ChatFormatting.GREEN));
         return 1;
     }
 
@@ -283,14 +282,14 @@ public final class GameCommands {
         int count = IntegerArgumentType.getInteger(ctx, "count");
         ResourceLocation key = ResourceLocation.tryParse(id);
         if (key == null || BuiltInRegistries.ITEM.getOptional(key).isEmpty()) {
-            ctx.getSource().sendFailure(Component.literal("不明なアイテム: " + id));
+            ctx.getSource().sendFailure(Component.translatable("bpg.error.unknown_item", id));
             return 0;
         }
         GameManager manager = GameManager.get(ctx.getSource().getServer());
         manager.config().loadoutOf(team).extraItems.add(new GameConfig.ItemEntry(key.toString(), count));
         manager.saveConfig();
-        feedback(ctx.getSource(), Component.literal(team.getDisplayName()).withStyle(team.getColor())
-                .append(Component.literal(" に " + key + " x" + count + " を追加しました").withStyle(ChatFormatting.GREEN)));
+        feedback(ctx.getSource(), Component.translatable("bpg.command.extra_added", team.getDisplayName(), key, count)
+                .withStyle(ChatFormatting.GREEN));
         return 1;
     }
 
@@ -299,12 +298,12 @@ public final class GameCommands {
         GameManager manager = GameManager.get(ctx.getSource().getServer());
         List<GameConfig.ItemEntry> items = manager.config().loadoutOf(team).extraItems;
         if (index < 0 || index >= items.size()) {
-            ctx.getSource().sendFailure(Component.literal("インデックスが範囲外です (0.." + (items.size() - 1) + ")"));
+            ctx.getSource().sendFailure(Component.translatable("bpg.error.index_out_of_range", items.size() - 1));
             return 0;
         }
         GameConfig.ItemEntry removed = items.remove(index);
         manager.saveConfig();
-        ok(ctx, "追加アイテムを削除: " + removed.item + " x" + removed.count);
+        ok(ctx, "bpg.command.extra_removed", removed.item, removed.count);
         return 1;
     }
 
@@ -314,48 +313,46 @@ public final class GameCommands {
 
     private static int showConfig(CommandSourceStack source) {
         GameConfig cfg = GameManager.get(source.getServer()).config();
-        header(source, "=== 設定 ===");
-        line(source, "制限時間(秒)", cfg.timeLimitSeconds);
-        line(source, "チーム比 赤:青", cfg.teamRatioRed + ":" + cfg.teamRatioBlue);
-        line(source, "青展開遅延(秒)", cfg.blueDeployDelaySeconds);
-        line(source, "アイテムCD(秒)", cfg.itemCooldownSeconds);
-        line(source, "加速時間(秒)", cfg.speedDurationSeconds);
-        line(source, "加速レベル", cfg.speedLevel);
-        line(source, "探知範囲", cfg.detectionRange);
-        line(source, "クモの巣消滅(秒)", cfg.cobwebDespawnSeconds);
-        line(source, "青スペクテーター(秒)", cfg.blueSpectatorSeconds);
-        line(source, "ボールサイズ", cfg.ballSize);
-        line(source, "ピンサイズ", cfg.pinSize);
-        line(source, "接触ダメージ", cfg.contactDamage);
-        line(source, "赤アイテム", loadoutText(cfg.redLoadout));
-        line(source, "青アイテム", loadoutText(cfg.blueLoadout));
-        line(source, "赤展開", cfg.redDeploy == null ? "未設定" : cfg.redDeploy + " r=" + cfg.redDeployRadius);
-        line(source, "青展開", cfg.blueDeploy == null ? "未設定" : cfg.blueDeploy.toString());
-        line(source, "牢獄数", cfg.jailPositions.size());
+        header(source, "bpg.header.config");
+        line(source, "bpg.config.time_limit", cfg.timeLimitSeconds);
+        line(source, "bpg.config.ratio", cfg.teamRatioRed + ":" + cfg.teamRatioBlue);
+        line(source, "bpg.config.blue_delay", cfg.blueDeployDelaySeconds);
+        line(source, "bpg.config.item_cooldown", cfg.itemCooldownSeconds);
+        line(source, "bpg.config.speed_duration", cfg.speedDurationSeconds);
+        line(source, "bpg.config.speed_level", cfg.speedLevel);
+        line(source, "bpg.config.detect_range", cfg.detectionRange);
+        line(source, "bpg.config.cobweb_despawn", cfg.cobwebDespawnSeconds);
+        line(source, "bpg.config.blue_spectator", cfg.blueSpectatorSeconds);
+        line(source, "bpg.config.ball_size", cfg.ballSize);
+        line(source, "bpg.config.pin_size", cfg.pinSize);
+        line(source, "bpg.config.damage", cfg.contactDamage);
+        line(source, "bpg.config.red_items", loadoutText(cfg.redLoadout));
+        line(source, "bpg.config.blue_items", loadoutText(cfg.blueLoadout));
+        line(source, "bpg.config.red_deploy", cfg.redDeploy == null ? Component.translatable("bpg.config.unset") : cfg.redDeploy + " r=" + cfg.redDeployRadius);
+        line(source, "bpg.config.blue_deploy", cfg.blueDeploy == null ? Component.translatable("bpg.config.unset") : cfg.blueDeploy.toString());
+        line(source, "bpg.config.jail_count", cfg.jailPositions.size());
         return 1;
     }
 
     private static int status(CommandSourceStack source) {
         GameManager manager = GameManager.get(source.getServer());
-        feedback(source, Component.literal("状態: ").withStyle(ChatFormatting.GRAY)
-                .append(Component.literal(manager.phase().name()).withStyle(ChatFormatting.YELLOW)));
-        feedback(source, Component.literal("赤(Pin): ").withStyle(ChatFormatting.RED)
-                .append(Component.literal(String.valueOf(manager.playersOf(GameTeam.RED).size())).withStyle(ChatFormatting.WHITE)));
-        feedback(source, Component.literal("青(Ball): ").withStyle(ChatFormatting.BLUE)
-                .append(Component.literal(String.valueOf(manager.playersOf(GameTeam.BLUE).size())).withStyle(ChatFormatting.WHITE)));
-        feedback(source, Component.literal("運営(Staff): ").withStyle(ChatFormatting.AQUA)
-                .append(Component.literal(String.valueOf(manager.playersOf(GameTeam.STAFF).size())).withStyle(ChatFormatting.WHITE)));
+        feedback(source, Component.translatable("bpg.status.phase",
+                Component.translatable("bpg.phase." + manager.phase().name().toLowerCase(java.util.Locale.ROOT)))
+                .withStyle(ChatFormatting.GRAY));
+        feedback(source, Component.translatable("bpg.status.red", manager.playersOf(GameTeam.RED).size()).withStyle(ChatFormatting.RED));
+        feedback(source, Component.translatable("bpg.status.blue", manager.playersOf(GameTeam.BLUE).size()).withStyle(ChatFormatting.BLUE));
+        feedback(source, Component.translatable("bpg.status.staff", manager.playersOf(GameTeam.STAFF).size()).withStyle(ChatFormatting.AQUA));
         return 1;
     }
 
     private static int score(CommandSourceStack source) {
         GameManager manager = GameManager.get(source.getServer());
-        header(source, "=== スコア ===");
-        feedback(source, Component.literal("青チーム(Ball) 捕獲数:").withStyle(ChatFormatting.BLUE));
+        header(source, "bpg.header.score");
+        feedback(source, Component.translatable("bpg.score.blue_kills").withStyle(ChatFormatting.BLUE));
         for (ServerPlayer player : manager.playersOf(GameTeam.BLUE)) {
             scoreLine(source, player.getName().getString(), manager.killsOf(player));
         }
-        feedback(source, Component.literal("赤チーム(Pin) 救出数:").withStyle(ChatFormatting.RED));
+        feedback(source, Component.translatable("bpg.score.red_rescues").withStyle(ChatFormatting.RED));
         for (ServerPlayer player : manager.playersOf(GameTeam.RED)) {
             scoreLine(source, player.getName().getString(), manager.rescuesOf(player));
         }
@@ -381,17 +378,16 @@ public final class GameCommands {
         }
     }
 
-    private static void ok(CommandContext<CommandSourceStack> ctx, String message) {
-        feedback(ctx.getSource(), Component.literal(message).withStyle(ChatFormatting.GREEN));
+    private static void ok(CommandContext<CommandSourceStack> ctx, String key, Object... args) {
+        feedback(ctx.getSource(), Component.translatable(key, args).withStyle(ChatFormatting.GREEN));
     }
 
-    private static void header(CommandSourceStack source, String text) {
-        feedback(source, Component.literal(text).withStyle(ChatFormatting.GOLD));
+    private static void header(CommandSourceStack source, String key) {
+        feedback(source, Component.translatable(key).withStyle(ChatFormatting.GOLD));
     }
 
-    private static void line(CommandSourceStack source, String label, Object value) {
-        feedback(source, Component.literal(label + ": ").withStyle(ChatFormatting.GRAY)
-                .append(Component.literal(String.valueOf(value)).withStyle(ChatFormatting.WHITE)));
+    private static void line(CommandSourceStack source, String labelKey, Object value) {
+        feedback(source, Component.translatable("bpg.config.line", Component.translatable(labelKey), value).withStyle(ChatFormatting.GRAY));
     }
 
     private static void scoreLine(CommandSourceStack source, String name, int value) {
@@ -399,14 +395,9 @@ public final class GameCommands {
                 .append(Component.literal(String.valueOf(value)).withStyle(ChatFormatting.YELLOW)));
     }
 
-    private static String loadoutText(GameConfig.TeamLoadout lo) {
+    private static Component loadoutText(GameConfig.TeamLoadout lo) {
         StringBuilder sb = new StringBuilder();
-        sb.append("ステーキ").append(lo.steak)
-                .append(" クモの巣").append(lo.cobwebs)
-                .append(" 探知:").append(lo.detector ? "有" : "無")
-                .append(" 加速:").append(lo.speed ? "有" : "無");
         if (lo.extraItems != null && !lo.extraItems.isEmpty()) {
-            sb.append(" 追加[");
             for (int i = 0; i < lo.extraItems.size(); i++) {
                 GameConfig.ItemEntry entry = lo.extraItems.get(i);
                 if (i > 0) {
@@ -414,8 +405,9 @@ public final class GameCommands {
                 }
                 sb.append(i).append(':').append(entry.item).append('x').append(entry.count);
             }
-            sb.append(']');
         }
-        return sb.toString();
+        return Component.translatable("bpg.config.loadout", lo.steak, lo.cobwebs,
+                Component.translatable(lo.detector ? "bpg.config.enabled" : "bpg.config.disabled"),
+                Component.translatable(lo.speed ? "bpg.config.enabled" : "bpg.config.disabled"), sb.toString());
     }
 }
