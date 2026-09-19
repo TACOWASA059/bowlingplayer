@@ -13,7 +13,7 @@ Minecraft 1.20.1 向けの Fabric / Forge MOD です。プレイヤーが通常�
 
 ## ビルド
 
-JDK 17 を使用します。リポジトリ直下で `./gradlew build`（Windows は `.\gradlew.bat build`）を実行すると、本体とアドオンの Fabric / Forge 版をまとめてビルドできます。GitHub Actions でも push と pull request ごとに同じビルドを実行します。GitHub Release を公開すると、そのタグのソースから4種類の JAR をビルドして Release に添付します。
+JDK 17 を使用します。リポジトリ直下で `./gradlew build`（Windows は `.\gradlew.bat build`）を実行すると、本体とアドオンの Fabric / Forge 版をまとめてビルドできます。GitHub Actions でも `main` への push と pull request ごとに同じビルドを実行します。`v` で始まるバージョンタグを push すると、Actions がそのタグのソースから4種類の JAR をビルドし、GitHub Release を作成して添付します。
 
 ## Bowling Player Game（ケイドロ）アドオン
 

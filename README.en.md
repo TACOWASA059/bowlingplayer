@@ -12,7 +12,7 @@ Bowling Player is a Fabric and Forge mod for Minecraft 1.20.1. The base `bowling
 
 ## Build
 
-Use JDK 17. From the repository root, run `./gradlew build` (or `.\gradlew.bat build` on Windows) to build the base mod and add-on for both loaders. GitHub Actions runs the same build on pushes and pull requests. Publishing a GitHub Release builds the tagged source and attaches the four loader JARs to that release.
+Use JDK 17. From the repository root, run `./gradlew build` (or `.\gradlew.bat build` on Windows) to build the base mod and add-on for both loaders. GitHub Actions runs the same build on pushes to `main` and on pull requests. Pushing a version tag beginning with `v` makes Actions build the tagged source, create a GitHub Release, and attach the four loader JARs.
 
 ## Bowling Player Game (Cops and Robbers) Add-on
 
